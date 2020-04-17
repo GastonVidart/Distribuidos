@@ -1,4 +1,3 @@
-package D_Ej1Cliente;
 // interface que contiene los métodos del servicio
 
 import java.rmi.*;
