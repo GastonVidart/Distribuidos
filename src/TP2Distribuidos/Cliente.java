@@ -12,17 +12,26 @@ public class Cliente implements Runnable {
     private String ipAdress = "127.0.0.1";
     private int port = 10000;
     private ServerCentral server;
-    private String horoscopo, fecha;
+    private String[] horoscopo, fecha;
+
+    public Cliente(String name, String[] horoscopo, String[] fecha) {
+        this.name = name;
+        this.horoscopo = horoscopo;
+        this.fecha = fecha;
+    }
 
     @Override
     public void run() {
         try {
             server = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/CalculadoraImp");
-            String[] respuesta = server.getPronostico(horoscopo, fecha);
-            if (!esError(respuesta)) {
-                System.out.println("->" + name + " recibio: \n"
-                        + "----Pronostico Horoscopo:" + respuesta[0]
-                        + "----Pronostico Clima: " + respuesta[1]);
+            int longitud = Math.min(horoscopo.length, fecha.length);
+            for (int i = 0; i < longitud; i++) {
+                String[] respuesta = server.getPronostico(horoscopo[i], fecha[i]);
+                if (!esError(respuesta)) {
+                    System.out.println("->" + name + " recibio: \n"
+                            + "----Pronostico Horoscopo:" + respuesta[0]
+                            + "----Pronostico Clima: " + respuesta[1]);
+                }
             }
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             System.out.println(ex);
