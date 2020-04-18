@@ -1,0 +1,3 @@
+grant codeBase "file:C:\Users\guido\Desktop\src\D_Ej2cliente\-" {
+    permission java.security.AllPermission;
+};
