@@ -1,6 +1,5 @@
 package TP2Distribuidos;
 
-// @author guido
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -10,11 +9,13 @@ public class Cliente implements Runnable {
 
     private String name;
     private String ipAdress = "127.0.0.1";
-    private int port = 10000;
-    private ServerCentral server;
-    private String[] horoscopo, fecha;
+    private int port = 10001;
+    //private ServerCentral server;
+    private ServerClima serverC;
+    private String[] horoscopo;
+	private String fecha;
 
-    public Cliente(String name, String[] horoscopo, String[] fecha) {
+    public Cliente(String name, String[] horoscopo, String fecha) {
         this.name = name;
         this.horoscopo = horoscopo;
         this.fecha = fecha;
@@ -23,13 +24,16 @@ public class Cliente implements Runnable {
     @Override
     public void run() {
         try {
-            server = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/CalculadoraImp");
-            int longitud = Math.min(horoscopo.length, fecha.length);
-            for (int i = 0; i < longitud; i++) {
-                String[] respuesta = server.getPronostico(horoscopo[i], fecha[i]);
+            //server = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
+            serverC = (ServerClima) Naming.lookup("//" + ipAdress + ":" + port + "/ServerClimaAA");
+            //int longitud = Math.min(horoscopo.length, fecha.length);
+            //int longitud = fecha.length;
+            for (int i = 0; i < 1; i++) {
+                //String[] respuesta = server.getPronostico(horoscopo[i], fecha[i]);
+                String[] respuesta = new String[]{"", serverC.getClima(fecha)};
                 if (!esError(respuesta)) {
                     System.out.println("->" + name + " recibio: \n"
-                            + "----Pronostico Horoscopo:" + respuesta[0]
+                            //+ "----Pronostico Horoscopo:" + respuesta[0]
                             + "----Pronostico Clima: " + respuesta[1]);
                 }
             }
@@ -42,7 +46,7 @@ public class Cliente implements Runnable {
         //Es un error solo si comienza con el prefijo "/error/"
         String error;
         boolean resultado = false;
-        if (respuesta[0].startsWith("/error/")) {
+        /*if (respuesta[0].startsWith("/error/")) {
             error = respuesta[0].substring("/error/".length());
             switch (error) {
                 case "ESH":
@@ -56,7 +60,7 @@ public class Cliente implements Runnable {
                     break;
             }
             resultado = true;
-        }
+        }*/
 
         if (respuesta[1].startsWith("/error/")) {
             error = respuesta[1].substring("/error/".length());
@@ -80,10 +84,10 @@ public class Cliente implements Runnable {
             resultado = true;
         }
 
-        if (respuesta[0] == null || respuesta[1] == null) {
+        /*if (respuesta[0] == null || respuesta[1] == null) {
             System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR CENTRAL");
             resultado = true;
-        }
+        }*/
         return resultado;
     }
 }
