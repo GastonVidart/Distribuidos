@@ -27,16 +27,16 @@ public class Cliente implements Runnable {
     public void run() {
         try {
             //server = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
-            serverC = (ServerClima) Naming.lookup("//" + ipAdress + ":" + port + "/ServerClimaAA");
-            serverH= (ServerHoroscopo) Naming.lookup("//" + ipAdress + ":" + port + "/ServerHoroscopoImp");
+            serverC = (ServerClima) Naming.lookup("//" + ipAdress + ":" + port + "/ServerClimaAA");//obtenemos el objeto remoto del server clima
+            serverH= (ServerHoroscopo) Naming.lookup("//" + ipAdress + ":" + port + "/ServerHoroscopoImp");//obtener el objeto remoto del server horoscopo
             //int longitud = Math.min(horoscopo.length, fecha.length);
             //int longitud = fecha.length;
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 2; i++) {
                 //String[] respuesta = server.getPronostico(horoscopo[i], fecha[i]);
-                String[] respuesta = new String[]{"", serverC.getClima(fecha)};
+                String[] respuesta = new String[]{serverH.recibirSolicitud(horoscopo[i]), serverC.getClima(fecha)};
                 if (!esError(respuesta)) {
                     System.out.println("->" + name + " recibio: \n"
-                            //+ "----Pronostico Horoscopo:" + respuesta[0]
+                            + "----Pronostico Horoscopo:" + respuesta[0]
                             + "----Pronostico Clima: " + respuesta[1]);
                 }
             }
