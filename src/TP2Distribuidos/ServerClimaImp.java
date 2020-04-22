@@ -46,7 +46,7 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
                 respuesta = this.pronostico[i];
             } else {
                 //respuesta = "La fecha recibida es Invalida " + validacion + "Clima Imp | Id Remota: " + this.ref;
-				respuesta = validacion;
+                respuesta = validacion;
             }
         } catch (InterruptedException ex) {
             System.err.println("Ocurrió un error al procesar el pronóstico | Clima Imp | Id Remota: "

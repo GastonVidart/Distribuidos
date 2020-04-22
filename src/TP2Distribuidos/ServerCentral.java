@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 
 public interface ServerCentral extends Remote{
 
-    public String[] getPronostico(String horoscopo, String fecha) throws RemoteException;
+    public String getPronostico(String horoscopo, String fecha) throws RemoteException;
+    
     
 }
