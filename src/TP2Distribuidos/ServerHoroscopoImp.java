@@ -2,14 +2,8 @@ package TP2Distribuidos;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import estructuras.ListString;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
+import estructuras.*;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHoroscopo {
 
@@ -43,29 +37,35 @@ public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHor
     }
 
     @Override
-    public String recibirSolicitud(String peticion) throws RemoteException {
+    public String getHoroscopo(String peticion) throws RemoteException {
         //modulo que recibe las solicitudes de un cliente y a partir de ella, primero verifca que sea valida
         //y luego si lo es, obtiene una prediccion para el signo solicitado, contestandosela al cliente
         //caso contrario contesta que recibio una solicitud incorrecta
 
-        String solicitud, respuesta = "nada";
+        String solicitud, respuesta;
         Random aleatorio = new Random();
 
         solicitud = peticion;
-        System.out.println("Solicitud Recibida: " + solicitud);
+        System.out.println("Llamada a getHoroscopo() | Horoscopo Imp | Id Remota: " + this.ref);
         //System.out.println(verificar(solicitud));  
-
-        //se obtiene una predicción aleatoria y se simula su procesamiento (tiempo de espera 1 seg)
-        synchronized (this) {
-            try {
-                this.wait(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ServerHoroscopoImp.class.getName()).log(Level.SEVERE, null, ex);
+        if (peticion.length() == 2 && this.protocoloHoroscopo.localizar(peticion) != -1) {
+            System.out.println("El signo recibido es Valido " + solicitud + " Horoscopo Imp || Id Remota: " + this.ref);            
+            //se obtiene una predicción aleatoria y se simula su procesamiento (tiempo de espera 1 seg)
+            synchronized (this) {
+                try {
+                    this.wait(1000);
+                } catch (InterruptedException ex) {
+                    System.err.println("Ocurrió un error al procesar el pronóstico | Clima Imp | Id Remota: "
+                            + this.ref + "\nEx:" + ex);
+                    //se notifica al cliente del error en el servidor
+                    return "Error al procesar horóscopo";
+                }
+                respuesta = this.predicciones[aleatorio.nextInt(this.predicciones.length)];
             }
-            respuesta = this.predicciones[aleatorio.nextInt(this.predicciones.length)];
+        } else {
+            respuesta="error(PH)"; //la solicitud fue invalida, no cumple el protocolo (Protocolo Horoscopo)           
         }
 
         return respuesta;
     }
-
 }

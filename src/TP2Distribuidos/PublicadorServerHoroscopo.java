@@ -1,6 +1,5 @@
 
 package TP2Distribuidos;
-
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 
@@ -26,7 +25,4 @@ public class PublicadorServerHoroscopo {
             System.exit(1);
         }
     }
-    
-    
-    
 }

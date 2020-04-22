@@ -14,10 +14,10 @@ public class Cliente implements Runnable {
     //private ServerCentral server;
     private ServerClima serverC;
     private ServerHoroscopo serverH;
-    private String[] horoscopo;
+    private String horoscopo;
 	private String fecha;
 
-    public Cliente(String name, String[] horoscopo, String fecha) {
+    public Cliente(String name, String horoscopo, String fecha) {
         this.name = name;
         this.horoscopo = horoscopo;
         this.fecha = fecha;
@@ -31,13 +31,13 @@ public class Cliente implements Runnable {
             serverH= (ServerHoroscopo) Naming.lookup("//" + ipAdress + ":" + port + "/ServerHoroscopoImp");//obtener el objeto remoto del server horoscopo
             //int longitud = Math.min(horoscopo.length, fecha.length);
             //int longitud = fecha.length;
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 1; i++) {
                 //String[] respuesta = server.getPronostico(horoscopo[i], fecha[i]);
-                String[] respuesta = new String[]{serverH.recibirSolicitud(horoscopo[i]), serverC.getClima(fecha)};
+                String[] respuesta = new String[]{serverH.getHoroscopo(horoscopo), serverC.getClima(fecha)};
                 if (!esError(respuesta)) {
                     System.out.println("->" + name + " recibio: \n"
-                            + "----Pronostico Horoscopo:" + respuesta[0]
-                            + "----Pronostico Clima: " + respuesta[1]);
+                            + "----Pronostico Horoscopo: " + respuesta[0]
+                            + "\n----Pronostico Clima: " + respuesta[1]);
                 }
             }
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
@@ -49,7 +49,7 @@ public class Cliente implements Runnable {
         //Es un error solo si comienza con el prefijo "/error/"
         String error;
         boolean resultado = false;
-        /*if (respuesta[0].startsWith("/error/")) {
+        if (respuesta[0].startsWith("/error/")) {
             error = respuesta[0].substring("/error/".length());
             switch (error) {
                 case "ESH":
@@ -63,7 +63,7 @@ public class Cliente implements Runnable {
                     break;
             }
             resultado = true;
-        }*/
+        }
 
         if (respuesta[1].startsWith("/error/")) {
             error = respuesta[1].substring("/error/".length());
