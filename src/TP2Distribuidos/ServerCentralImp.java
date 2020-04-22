@@ -8,10 +8,6 @@ import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Gastón
- */
 public class ServerCentralImp {
 
     private ServerHoroscopo svrHoroscopo;
