@@ -13,6 +13,7 @@ public class Cliente implements Runnable {
     private int port = 10001;
     //private ServerCentral server;
     private ServerClima serverC;
+    private ServerHoroscopo serverH;
     private String[] horoscopo;
 	private String fecha;
 
@@ -27,6 +28,7 @@ public class Cliente implements Runnable {
         try {
             //server = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
             serverC = (ServerClima) Naming.lookup("//" + ipAdress + ":" + port + "/ServerClimaAA");
+            serverH= (ServerHoroscopo) Naming.lookup("//" + ipAdress + ":" + port + "/ServerHoroscopoImp");
             //int longitud = Math.min(horoscopo.length, fecha.length);
             //int longitud = fecha.length;
             for (int i = 0; i < 1; i++) {

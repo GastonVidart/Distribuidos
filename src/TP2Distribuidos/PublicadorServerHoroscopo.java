@@ -14,8 +14,8 @@ public class PublicadorServerHoroscopo {
             System.setProperty("java.rmi.server.hostname", "localhost");
         }
         try {
-            ServerClima serverClima = new ServerClimaImp();
-            Naming.rebind("rmi://" + ip + ":" + puerto + "/ServerClimaAA", serverClima);
+            ServerHoroscopo serverHoroscopo = new ServerHoroscopoImp();
+            Naming.rebind("rmi://" + ip + ":" + puerto + "/ServerHoroscopoImp", serverHoroscopo);
             System.out.println("Servidor Clima Publicado");
         } catch (RemoteException e) {
             System.err.println("Error de comunicacion: " + e.toString());
