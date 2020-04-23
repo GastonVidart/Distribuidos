@@ -1,4 +1,3 @@
-
 package TP2Distribuidos;
 
 import java.net.MalformedURLException;
@@ -11,11 +10,11 @@ public class Cliente implements Runnable {
     private String name;
     private String ipAdress = "127.0.0.1";
     private int port = 10001;
-    //private ServerCentral server;
+    private ServerCentral serverCentral;
     private ServerClima serverC;
     private ServerHoroscopo serverH;
     private String horoscopo;
-	private String fecha;
+    private String fecha;
 
     public Cliente(String name, String horoscopo, String fecha) {
         this.name = name;
@@ -26,14 +25,14 @@ public class Cliente implements Runnable {
     @Override
     public void run() {
         try {
-            //server = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
-            serverC = (ServerClima) Naming.lookup("//" + ipAdress + ":" + port + "/ServerClimaAA");//obtenemos el objeto remoto del server clima
-            serverH= (ServerHoroscopo) Naming.lookup("//" + ipAdress + ":" + port + "/ServerHoroscopoImp");//obtener el objeto remoto del server horoscopo
+            serverCentral = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
+            //serverC = (ServerClima) Naming.lookup("//" + ipAdress + ":" + port + "/ServerClima");//obtenemos el objeto remoto del server clima
+            //serverH= (ServerHoroscopo) Naming.lookup("//" + ipAdress + ":" + port + "/ServerHoroscopoImp");//obtener el objeto remoto del server horoscopo
             //int longitud = Math.min(horoscopo.length, fecha.length);
             //int longitud = fecha.length;
             for (int i = 0; i < 1; i++) {
-                //String[] respuesta = server.getPronostico(horoscopo[i], fecha[i]);
-                String[] respuesta = new String[]{serverH.getHoroscopo(horoscopo), serverC.getClima(fecha)};
+                String[] respuesta = new String[]{serverCentral.getPronostico(horoscopo[i], fecha[i])};
+                //String[] respuesta = new String[]{serverH.getHoroscopo(horoscopo), serverC.getClima(fecha)};
                 if (!esError(respuesta)) {
                     System.out.println("->" + name + " recibio: \n"
                             + "----Pronostico Horoscopo: " + respuesta[0]

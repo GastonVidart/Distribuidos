@@ -97,6 +97,7 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
                 dia = Integer.parseInt(fecha.substring(0, indexA));
                 mes = Integer.parseInt(fecha.substring(indexA + 1, indexB));
                 anio = Integer.parseInt(fecha.substring(indexB + 1));
+                
                 // se controla que el dia sea valido
                 if (dia >= 1 && dia <= 31) {
                     // si el mes es febrero, se verifica si el año es bisiesto, y que el dia sea menor a 29 dias,
