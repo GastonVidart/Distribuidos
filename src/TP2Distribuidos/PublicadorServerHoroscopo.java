@@ -1,4 +1,3 @@
-
 package TP2Distribuidos;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -14,7 +13,7 @@ public class PublicadorServerHoroscopo {
         }
         try {
             ServerHoroscopo serverHoroscopo = new ServerHoroscopoImp();
-            Naming.rebind("rmi://" + ip + ":" + puerto + "/ServerHoroscopo", serverHoroscopo);
+            Naming.rebind("rmi://" + ip + ":" + puerto + "/ServerHoroscopoImp", serverHoroscopo);
             System.out.println("Servidor Horoscopo Publicado");
         } catch (RemoteException e) {
             System.err.println("Error de comunicacion: " + e.toString());

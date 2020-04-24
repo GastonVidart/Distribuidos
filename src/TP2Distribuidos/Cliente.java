@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public class Cliente implements Runnable {
 
@@ -25,105 +26,58 @@ public class Cliente implements Runnable {
     @Override
     public void run() {
         try {
+//            String pronosticoHoroscopo, pronosticoClima;
+            ArrayList<String> respuestas;
             serverCentral = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
-            //serverC = (ServerClima) Naming.lookup("//" + ipAdress + ":" + port + "/ServerClima");//obtenemos el objeto remoto del server clima
-            //serverH= (ServerHoroscopo) Naming.lookup("//" + ipAdress + ":" + port + "/ServerHoroscopoImp");//obtener el objeto remoto del server horoscopo
-            //int longitud = Math.min(horoscopo.length, fecha.length);
-            //int longitud = fecha.length;
-            for (int i = 0; i < 1; i++) {
-                String respuesta = serverCentral.getPronostico(horoscopo, fecha);
-                String[] rtaSeparada = respuesta.split(";");
-                //String[] respuesta = new String[]{serverH.getHoroscopo(horoscopo), serverC.getClima(fecha)};
-                for (String rta : rtaSeparada) {
-                    System.out.println(rta);
-                }
-                //if (!esError(rtaSeparada)) {
-                    System.out.println("->" + name + " recibio: \n"
-                            + "----Pronostico Horoscopo: " + rtaSeparada[0]
-                            + "\n----Pronostico Clima: " + rtaSeparada[1]);
-                //}
+
+            respuestas = serverCentral.getPronostico(horoscopo, fecha);
+
+            if (respuestas.size() == 1) {
+                mostrarError(respuestas.get(0));
+            } else if (respuestas.isEmpty() || respuestas.size() > 2) {
+                mostrarError("SC");
+            } else {
+                System.out.println("->" + name + " recibio: \n"
+                        + "----Pronostico Horoscopo: " + respuestas.get(0)
+                        + "\n----Pronostico Clima: " + respuestas.get(1));
             }
+
+//            pronosticoClima = serverCentral.getPronosticoClima(fecha);
+//            if (!esErrorClima(pronosticoClima)) {
+//
+//                pronosticoHoroscopo = serverCentral.getPronosticoHoroscopo(horoscopo, fecha);
+//                if (!esErrorPronostico(pronosticoHoroscopo)) {
+//                    
+//                }
+//            }
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             System.out.println(ex);
         }
     }
 
-    private boolean esError(String[] respuesta) {
-        //Es un error solo si comienza con el prefijo "/error/"
-        String error;
-        boolean resultado = false;
-        if (respuesta.length == 1) {
-            if (respuesta[0].startsWith("error")) {
-                error = respuesta[0].substring("/error/".length());
-                switch (error) {
-                    case "ESH":
-                        System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR DE HORÓSCOPO");
-                        break;
-                    case "PH":
-                        System.out.println("ERROR: ERROR EN EL PROTOCOLO DEL HOROSCOPO");
-                        break;
-                    case "ESC":
-                        System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR DEL CLIMA");
-                        break;
-                    case "FD":
-                        System.out.println("ERROR: DIA NO VALIDO");
-                        break;
-                    case "PC":
-                        System.out.println("ERROR: FECHA NO VALIDA");
-                        break;
-                    case "FM":
-                        System.out.println("ERROR: MES NO VALIDO");
-                        break;
-                    default:
-                        System.out.println("ERROR: " + error);
-                        break;
-                }
-                resultado = true;
-            }
+    private void mostrarError(String error) {
+        switch (error) {
+            case "ESH":
+                System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR DE HORÓSCOPOS");
+                break;
+            case "PH":
+                System.out.println("ERROR: ERROR EN EL PROTOCOLO DEL HOROSCOPO");
+                break;
+            case "ESC":
+                System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR DEL CLIMA");
+                break;
+            case "FD":
+                System.out.println("ERROR: DIA NO VALIDO");
+                break;
+            case "PC":
+                System.out.println("ERROR: FECHA NO VALIDA");
+                break;
+            case "FM":
+                System.out.println("ERROR: MES NO VALIDO");
+                break;
+            case "SC":
+                System.out.println("ERROR: ERROR DEL SERVIDOR CENTRAL");
+                break;
         }
-
-        /*if (respuesta[0].startsWith("error")) {
-            error = respuesta[0].substring("/error/".length());
-            switch (error) {
-                case "ESH":
-                    System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR DE HORÓSCOPOS");
-                    break;
-                case "PH":
-                    System.out.println("ERROR: ERROR EN EL PROTOCOLO DEL HOROSCOPO");
-                    break;
-                default:
-                    System.out.println("ERROR: " + error);
-                    break;
-            }
-            resultado = true;
-        }
-
-        if (respuesta[1].startsWith("error")) {
-            error = respuesta[1].substring("/error/".length());
-            switch (error) {
-                case "ESC":
-                    System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR DEL CLIMA");
-                    break;
-                case "FD":
-                    System.out.println("ERROR: DIA NO VALIDO");
-                    break;
-                case "PC":
-                    System.out.println("ERROR: FECHA NO VALIDA");
-                    break;
-                case "FM":
-                    System.out.println("ERROR: MES NO VALIDO");
-                    break;
-                default:
-                    System.out.println("ERROR: " + error);
-                    break;
-            }
-            resultado = true;
-        }*/
-
- /*if (respuesta[0] == null || respuesta[1] == null) {
-            System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR CENTRAL");
-            resultado = true;
-        }*/
-        return resultado;
     }
 }

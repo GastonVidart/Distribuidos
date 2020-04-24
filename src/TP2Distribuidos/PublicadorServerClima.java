@@ -1,5 +1,4 @@
 package TP2Distribuidos;
-
 import java.rmi.*;
 
 class PublicadorServerClima {
@@ -13,7 +12,7 @@ class PublicadorServerClima {
         }
         try {
             ServerClima serverClima = new ServerClimaImp();
-            Naming.rebind("rmi://" + ip + ":" + puerto + "/ServerClima", serverClima);
+            Naming.rebind("rmi://" + ip + ":" + puerto + "/ServerClimaImp", serverClima);
             System.out.println("Servidor Clima Publicado");
         } catch (RemoteException e) {
             System.err.println("Error de comunicacion: " + e.toString());

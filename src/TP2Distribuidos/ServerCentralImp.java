@@ -115,7 +115,8 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                 }
                 System.out.println("Cache Completa: " + this.cache.toString());
             } else {
-
+				System.out.println(rtaValidacion);
+				respuesta.add(rtaValidacion);
             }
         } catch (InterruptedException ex) {
             System.err.println("Ocurrió un error al esperar por la respuesta\n"
@@ -132,25 +133,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
         }
         return respuesta;
     }
-
-    /*private boolean validarFormatoClima(String fecha) {
-        // modulo que verifica que la fecha recibida cumpla con el formato DD-MM-A..., (el año puede ser desde 0 en adelante)
-        // retorna true/false segun si la fecha es valida o no
-        int indexA = fecha.indexOf("-"), indexB = fecha.indexOf("-", indexA + 1);
-        boolean exito = false;
-        if (indexA == 2 && indexB == 5 && fecha.length() >= 7) {
-            try {
-                dia = Integer.parseInt(fecha.substring(0, indexA));
-                mes = Integer.parseInt(fecha.substring(indexA + 1, indexB));
-                anio = Integer.parseInt(fecha.substring(indexB + 1));
-                exito = true;
-            } catch (NumberFormatException ex) {
-                //Se ingreso un caracter que no era un nro en la fecha
-                exito = false;
-            }
-        }
-        return exito;
-    }*/
+	
     private String validarFecha(String fecha) {
         // modulo que a partir de la fecha recibida verfica si cumple el formato, y luego verifica que sea una fecha valida
         // en caso de no serlo retorna el error que tiene la fecha, caso contrario retorna "valida"
@@ -176,13 +159,13 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                                 respuesta = "valida";
                             } else {
                                 //error en el dia recibido, la fecha tiene mas dias de los que permite febrero bisiesto
-                                respuesta = "error(FD)";
+                                respuesta = "FD";
                             }
                         } else if (dia <= 28) {
                             respuesta = "valida";
                         } else {
                             //error en el dia recibido, la fecha tiene mas dias de los que permite febrero no bisiesto
-                            respuesta = "error(FD)";
+                            respuesta = "FD";
                         }
                         //si no es feberero, se verifican para los meses restantes si tiene 30 o 31 dias
                     } else if ((mes == 4 || mes == 6 || mes == 7 || mes == 11) && dia <= 30) {
@@ -191,18 +174,18 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                         respuesta = "valida";
                     } else {
                         //error en el mes recibido, la fecha cuenta con un valor de mes invalido
-                        respuesta = "error(FM)";
+                        respuesta = "FM";
                     }
                 } else {
                     //error en el dia recibido, la fecha cuenta con más de 31 días o 0
-                    respuesta = "error(FD)";
+                    respuesta = "FD";
                 }
             } catch (NumberFormatException ex) {
-                return "error(PC)"; //Protocolo Clima
+                return "PC"; //Protocolo Clima
             }
         } else {
             // error en el formato de la fecha recibida, no se respetó el formato
-            respuesta = "error(PC)"; //Protocolo Clima
+            respuesta = "PC"; //Protocolo Clima
         }
         return respuesta;
     }
@@ -218,10 +201,10 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
             if (horoscopo.length() == 2 && this.protocoloHoroscopo.localizar(horoscopo) != -1) {
                 respuesta = "valida";
             } else {
-                respuesta = "error(PH)"; //la solicitud fue invalida, no cumple el protocolo (Protocolo Horoscopo)
+                respuesta = "PH"; //la solicitud fue invalida, no cumple el protocolo (Protocolo Horoscopo)
             }
         } else {
-            respuesta = "error(PC)"; //la solicitud fue invalida, no cumple el protocolo (Protocolo Clima)                    
+            respuesta = "PC"; //la solicitud fue invalida, no cumple el protocolo (Protocolo Clima)                    
         }
 
         //aca borre el error CP, porque recibo parametros diferentes ///////////////
