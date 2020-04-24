@@ -25,7 +25,6 @@ public class Cliente implements Runnable {
     @Override
     public void run() {
         try {
-            serverCentral = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
             //serverC = (ServerClima) Naming.lookup("//" + ipAdress + ":" + port + "/ServerClima");//obtenemos el objeto remoto del server clima
             //serverH= (ServerHoroscopo) Naming.lookup("//" + ipAdress + ":" + port + "/ServerHoroscopoImp");//obtener el objeto remoto del server horoscopo
             //int longitud = Math.min(horoscopo.length, fecha.length);
