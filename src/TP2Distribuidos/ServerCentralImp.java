@@ -4,6 +4,7 @@ import estructuras.ListString;
 import java.rmi.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Map;
@@ -13,12 +14,12 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
 
     private ServerHoroscopo svrHoroscopo;
     private ServerClima svrClima;
-    private Map<String, String> cache;
+    private Map<String, String[]> cache;
     private Semaphore semaforoCache;
     private ListString protocoloHoroscopo;
 
     public ServerCentralImp(String ip, int puerto) throws RemoteException {
-        Hashtable<String, String> mapa = new Hashtable<String, String>();
+        Hashtable<String, String[]> mapa = new Hashtable<String, String[]>();
         this.cache = Collections.synchronizedMap(mapa);
         this.semaforoCache = new Semaphore(1);
         String[] horoscopo = {"AR", "TA", "GE", "CC", "LE", "VG", "LB", "ES", "SA", "CP", "AC", "PI"};
@@ -39,19 +40,21 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
     }
 
     @Override
-    public String getPronostico(String horoscopo, String fecha) {        
+    public ArrayList<String> getPronostico(String horoscopo, String fecha) {
         //modulo que recibe las solicitudes de un cliente y a partir de ella, verifica que cumpla el formato principal, 
         //el cual es prediccion(signo,fecha). Luego verifca si la solicitud ya fue hecha, si es asi responde la respuesta almacenada,
         //caso contrario solicita un prediccion y un pronostico del clima a cada servidor correspondiente.
         //finalemente contesta lo que le hayan respondido los servidores (error o respuesta valida).
-        String respuestaHoroscopo, respuestaClima, respuestaCache,
-                claveCache, clave, valor, respuesta;
+        String respuestaHoroscopo, respuestaClima, rtaValidacion,
+                claveCache, clave;
+        String[] respuestaCache, valor;
+        ArrayList<String> respuesta = new ArrayList<String>();
         try {
             System.out.println("Llamada a getPronostico() | Central Imp | Id Remota: " + this.ref);
 
             //Se verfica el formato de la solicitud recibida
-            respuesta = validacion(horoscopo, fecha);
-            if (respuesta.equals("valida")) {
+            rtaValidacion = validacion(horoscopo, fecha);
+            if (rtaValidacion.equals("valida")) {
                 /*indexA = solicitudCliente.indexOf(";");
                 solicitudHoroscopo = solicitudCliente.substring(11, indexA);
                 solicitudClima = solicitudCliente.substring(indexA + 1, solicitudCliente.length() - 1);*/
@@ -63,21 +66,23 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                 System.out.println("Solicitud: " + claveCache + " Respuesta Cache: " + respuestaCache + " || Id Remota: " + this.ref);
                 if (respuestaCache != null) { // la cache tuvo exito 
                     //System.out.println("entre al if si es diferente de nulo");
-                    while (respuestaCache.equals("respuestaEnCurso")) {
-                        System.out.println("Espero la respuesta de la consulta: " + claveCache + " || Id Remota: " + this.ref);
+                    while (respuestaCache[0].equals("respuestaEnCurso")) {
+                        System.out.println("Respuesta en curso para: " + claveCache + " || Id Remota: " + this.ref);
                         this.semaforoCache.acquire();
                         respuestaCache = this.cache.get(claveCache);
                     }
                     this.semaforoCache.release();
-                    respuesta = respuestaCache;
-                    System.out.println("Cache Exito: Clave: " + claveCache + " Valor: " + respuestaCache + " || Id Remota: " + this.ref);
+
+                    respuesta.add(respuestaCache[0]);
+                    respuesta.add(respuestaCache[1]);
+                    System.out.println("Cache Exito: Clave: " + claveCache + " Valor: " + respuestaCache[0] + "|" + respuestaCache[1] + " || Id Remota: " + this.ref);
 
                 } else { // si la cache no tuvo exito se realiza la consulta a los servidores Clima y Horoscopo respectivamente
 
                     //semaforo para que un cliente con una misma consulta no trate de buscar la respuesta y no la encuentre en la cache
                     this.semaforoCache.acquire();
                     System.out.println("Se adquirio el lock para la consulta " + claveCache + " || Id Remota: " + this.ref);
-                    this.cache.put(claveCache, "respuestaEnCurso");
+                    this.cache.put(claveCache, new String[]{"respuestaEnCurso"});   //se crea un arreglo de 1 posicion que guarda el mensaje de respuesta en curso
 
                     //si en ambas fue valida devuelve la respuesta al cliente y la guarda en la cache,  
                     //caso contrario caso contrario retransmite el error del servidor correspondiente                    
@@ -92,33 +97,38 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                             //la clave se forma concatenando las dos solicitudes horoscopo + fecha
                             //el valor se forma con las respuestas correctas de ambos servidores (rta1,rta2)
                             clave = horoscopo + fecha;
-                            valor = "(" + respuestaHoroscopo + ";" + respuestaClima + ")";
-                            System.out.println("Agrego Clave: " + clave + " Valor: " + valor + " || Id Remota: " + this.ref);
+                            valor = new String[]{respuestaHoroscopo, respuestaClima};
+                            System.out.println("Agrego Clave: " + clave + " Valor: " + valor[0] + "|" + valor[1] + " || Id Remota: " + this.ref);
                             this.cache.put(clave, valor);
 
-                            //Se le responde al cliente la solicitud valida
-                            respuesta = respuestaHoroscopo + respuestaClima;
+                            //Se le responde al cliente la solicitud valida                            
+                            respuesta.add(respuestaHoroscopo);
+                            respuesta.add(respuestaClima);
                             this.semaforoCache.release();   //Liberamos el lock para que los que tuvieron la misma consulta puedan obtener la respuesta de la cache
                             System.out.println("Libero el lock para la consulta " + claveCache + " || Id Remota: " + this.ref);
                         } else {
-                            respuesta = respuestaClima;  //Se le responde al cliente del error en clima
+                            respuesta.add(respuestaClima);  //Se le responde al cliente del error en clima
                         }
                     } else {
-                        respuesta = respuestaHoroscopo;  //Se le responde al cliente del error en horoscopo
+                        respuesta.add(respuestaHoroscopo);  //Se le responde al cliente del error en horoscopo
                     }
                 }
                 System.out.println("Cache Completa: " + this.cache.toString());
+            } else {
+
             }
         } catch (InterruptedException ex) {
             System.err.println("Ocurrió un error al esperar por la respuesta\n"
                     + "Ex:" + ex);
             //Si ocurre un error en el servidor entonces se envia un mensaje al cliente notificando del error en el mismo            
-            return "error al esperar la respuesta";
+            respuesta.add("error al esperar la respuesta");
+            return respuesta;
         } catch (RemoteException ex) {
             System.err.println("Ocurrió un error al referenciar al objeto remoto de Servidor Clima y/o Horoscopo\n"
                     + "Ex:" + ex);
             //Si ocurre un error en el servidor entonces se envia un mensaje al cliente notificando del error en el mismo            
-            return "error al referenciar a un objeto remoto";
+            respuesta.add("error al referenciar a un objeto remoto");
+            return respuesta;
         }
         return respuesta;
     }

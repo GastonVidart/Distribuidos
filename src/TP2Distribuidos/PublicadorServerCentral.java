@@ -17,6 +17,7 @@ public class PublicadorServerCentral {
             System.setSecurityManager(new SecurityManager());
             System.setProperty("java.rmi.server.hostname", "localhost");
         }
+        
         try {
             ServerCentral serverCentral = new ServerCentralImp(ip, puerto);
             Naming.rebind("rmi://" + ip + ":" + puerto + "/ServerClima", serverCentral);

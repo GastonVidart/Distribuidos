@@ -31,13 +31,17 @@ public class Cliente implements Runnable {
             //int longitud = Math.min(horoscopo.length, fecha.length);
             //int longitud = fecha.length;
             for (int i = 0; i < 1; i++) {
-                String[] respuesta = new String[]{serverCentral.getPronostico(horoscopo[i], fecha[i])};
+                String respuesta = serverCentral.getPronostico(horoscopo, fecha);
+                String[] rtaSeparada = respuesta.split(";");
                 //String[] respuesta = new String[]{serverH.getHoroscopo(horoscopo), serverC.getClima(fecha)};
-                if (!esError(respuesta)) {
-                    System.out.println("->" + name + " recibio: \n"
-                            + "----Pronostico Horoscopo: " + respuesta[0]
-                            + "\n----Pronostico Clima: " + respuesta[1]);
+                for (String rta : rtaSeparada) {
+                    System.out.println(rta);
                 }
+                //if (!esError(rtaSeparada)) {
+                    System.out.println("->" + name + " recibio: \n"
+                            + "----Pronostico Horoscopo: " + rtaSeparada[0]
+                            + "\n----Pronostico Clima: " + rtaSeparada[1]);
+                //}
             }
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             System.out.println(ex);
@@ -48,7 +52,37 @@ public class Cliente implements Runnable {
         //Es un error solo si comienza con el prefijo "/error/"
         String error;
         boolean resultado = false;
-        if (respuesta[0].startsWith("/error/")) {
+        if (respuesta.length == 1) {
+            if (respuesta[0].startsWith("error")) {
+                error = respuesta[0].substring("/error/".length());
+                switch (error) {
+                    case "ESH":
+                        System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR DE HORÓSCOPO");
+                        break;
+                    case "PH":
+                        System.out.println("ERROR: ERROR EN EL PROTOCOLO DEL HOROSCOPO");
+                        break;
+                    case "ESC":
+                        System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR DEL CLIMA");
+                        break;
+                    case "FD":
+                        System.out.println("ERROR: DIA NO VALIDO");
+                        break;
+                    case "PC":
+                        System.out.println("ERROR: FECHA NO VALIDA");
+                        break;
+                    case "FM":
+                        System.out.println("ERROR: MES NO VALIDO");
+                        break;
+                    default:
+                        System.out.println("ERROR: " + error);
+                        break;
+                }
+                resultado = true;
+            }
+        }
+
+        /*if (respuesta[0].startsWith("error")) {
             error = respuesta[0].substring("/error/".length());
             switch (error) {
                 case "ESH":
@@ -64,7 +98,7 @@ public class Cliente implements Runnable {
             resultado = true;
         }
 
-        if (respuesta[1].startsWith("/error/")) {
+        if (respuesta[1].startsWith("error")) {
             error = respuesta[1].substring("/error/".length());
             switch (error) {
                 case "ESC":
@@ -84,9 +118,9 @@ public class Cliente implements Runnable {
                     break;
             }
             resultado = true;
-        }
+        }*/
 
-        /*if (respuesta[0] == null || respuesta[1] == null) {
+ /*if (respuesta[0] == null || respuesta[1] == null) {
             System.out.println("ERROR: ERROR POR PARTE DEL SERVIDOR CENTRAL");
             resultado = true;
         }*/
