@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class Cliente implements Runnable {
+    //comentario para commit////////////////////////////////////////
 
     private String name;
     private String ipAdress = "127.0.0.1";
