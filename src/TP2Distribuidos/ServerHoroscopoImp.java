@@ -2,12 +2,13 @@ package TP2Distribuidos;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import estructuras.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHoroscopo {
 
-    private ListString protocoloHoroscopo;
+    private ArrayList<String> protocoloHoroscopo;
 
     private static String[] predicciones = {"Para sanar sus heridas se debera cumplir un reto que se le presentara al medio dia",
         "Se debera cuidar de sus amigos, pues ellos podran revelarle algo inesperado",
@@ -21,51 +22,43 @@ public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHor
         "No hagas caso a la gente que habla mal de tu persona, sigue tus instintos, ellos te llevaran muy lejos"};
 
     public ServerHoroscopoImp() throws RemoteException {
-        //modulo que inicializa el servidorHiloHorosocopo; recibe el socket, el identificador de la conexion,
-        //un arreglo de las predicciones posibles para cada horosocopo y un arreglo con el protocolo de horosocopo
         super();
 
-        this.protocoloHoroscopo = new ListString();
-
-        String[] horoscopos = {"AR", "TA", "GE", "CC", "LE", "VG", "LB", "ES", "SA", "CP", "AC", "PI"};
-        int largoHoroscopo = horoscopos.length;
-        for (int i = 0; i < largoHoroscopo; i++) {
-            //Llenamos la lista con el protocolo de horoscopo
-            this.protocoloHoroscopo.insertar(horoscopos[i], i + 1);
-        }
-
+        Log.logInfo("ServidorHoroscopo-" + this.ref, "Se crea una nueva instancia con id: " + this.ref);
+        System.out.println("->ServidorHoroscopo: Se crea una nueva instancia");
+        this.protocoloHoroscopo = new ArrayList<>();
+        this.protocoloHoroscopo.addAll(Arrays.asList(
+                new String[]{"AR", "TA", "GE", "CC", "LE", "VG", "LB", "ES", "SA", "CP", "AC", "PI"}));
     }
 
     @Override
-    public String getHoroscopo(String peticion) throws RemoteException {
-        //modulo que recibe las solicitudes de un cliente y a partir de ella, primero verifca que sea valida
-        //y luego si lo es, obtiene una prediccion para el signo solicitado, contestandosela al cliente
-        //caso contrario contesta que recibio una solicitud incorrecta
-
-        String solicitud, respuesta;
+    public String getHoroscopo(String solicitud) throws RemoteException {
+        //Se verifica que la solicitud sea válida y se responde con un 
+        //pronostico si lo es, o un mensaje de error en caso contrario
+        Log.logInfo("ServidorHoroscopo-" + this.ref, "Se solicita un horoscopo");
+        System.out.println("->ServidorHoroscopo: Se solicita un horoscopo");
+        String respuesta;
         Random aleatorio = new Random();
 
-        solicitud = peticion;
-        System.out.println("Llamada a getHoroscopo() | Horoscopo Imp | Id Remota: " + this.ref);
-        //System.out.println(verificar(solicitud));  
-        if (peticion.length() == 2 && this.protocoloHoroscopo.localizar(peticion) != -1) {
-            System.out.println("El signo recibido es Valido " + solicitud + " Horoscopo Imp || Id Remota: " + this.ref);            
-            //se obtiene una predicción aleatoria y se simula su procesamiento (tiempo de espera 1 seg)
+        if (solicitud.length() == 2 && protocoloHoroscopo.contains(solicitud)) {
+            Log.logInfo("ServidorHoroscopo-" + this.ref, "Solicitud valida");
             synchronized (this) {
+                //Se obtiene una predicción aleatoria y se simula su procesamiento (tiempo de espera 1 seg)
                 try {
                     this.wait(1000);
                 } catch (InterruptedException ex) {
-                    System.err.println("Ocurrió un error al procesar el pronóstico | Clima Imp | Id Remota: "
-                            + this.ref + "\nEx:" + ex);
-                    //se notifica al cliente del error en el servidor
-                    return "Error al procesar horóscopo";
+                    Log.logError("ServidorHoroscopo-" + this.ref, "Error en el procesamiento del pronóstico: " + ex.getMessage());
+                    System.err.println("->ServidorHoroscopo: Error en el procesamiento del pronóstico");
+                    return "ESH";
                 }
-                respuesta = this.predicciones[aleatorio.nextInt(this.predicciones.length)];
+                respuesta = predicciones[aleatorio.nextInt(predicciones.length)];
             }
         } else {
-            respuesta="error(PH)"; //la solicitud fue invalida, no cumple el protocolo (Protocolo Horoscopo)           
+            Log.logError("ServidorHoroscopo-" + this.ref, "Solicitud invalida");
+            respuesta = "PH"; //Solicitud no valida por el protocolo
         }
-
+        Log.logInfo("ServidorHoroscopo-" + this.ref, "Se responde al Cliente: " + respuesta);
+        System.out.println("->ServidorHoroscopo: Se responde a una solicitud");
         return respuesta;
     }
 }

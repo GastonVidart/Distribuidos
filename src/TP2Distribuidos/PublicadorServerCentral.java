@@ -10,13 +10,14 @@ public class PublicadorServerCentral {
     private static final int puerto = 10001;
 
     public static void main(String[] args) {
+        //Iniciar el Log
         try {
             Log.startLog("LogCentral.txt");
         } catch (SecurityException | IOException ex) {            
-            //Logger.getLogger(PublicadorServerCentral.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println(ex);
         }
         
+        //Conectar con rmi
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
             System.setProperty("java.rmi.server.hostname", "localhost");

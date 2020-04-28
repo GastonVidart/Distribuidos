@@ -4,12 +4,13 @@ package TP2Distribuidos;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class Log {
     
-    public static Logger logger;
+    private static Logger logger;
     
     private static FileHandler fh;
     
@@ -25,5 +26,13 @@ public class Log {
         logger.addHandler(fh);
         SimpleFormatter formatter = new SimpleFormatter();
         fh.setFormatter(formatter);        
+    }
+    
+    public static void logInfo(String system, String message){
+        logger.log(Level.INFO, "->{0}: {1}", new Object[]{system, message});
+    }
+    
+    public static void logError(String system, String message){
+        logger.log(Level.INFO, "XX{0}: {1}", new Object[]{system, message});
     }
 }
