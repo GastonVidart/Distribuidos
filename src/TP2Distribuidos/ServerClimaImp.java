@@ -21,8 +21,8 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
     public String getClima(String fecha) throws RemoteException {
         //Se verifica que la solicitud sea válida y se responde con un 
         //pronostico si lo es, o un mensaje de error en caso contrario
-        Log.logInfo("ServidorHoroscopo-" + this.ref, "Se solicita un horoscopo");
-        System.out.println("->ServidorHoroscopo: Se solicita un horoscopo");
+        Log.logInfo("ServidorClima-" + this.ref, "Se solicita un horoscopo");
+        System.out.println("->ServidorClima: Se solicita un horoscopo");
         String respuesta, validacion;
         Random aleatorio = new Random();
         int indiceRandom, dia, mes, anio,
@@ -30,7 +30,7 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
 
         validacion = validarFecha(fecha);
         if (validacion.equals("valida")) {
-            Log.logInfo("ServidorHoroscopo-" + this.ref, "Solicitud valida");
+            Log.logInfo("ServidorClima-" + this.ref, "Solicitud valida");
             dia = Integer.parseInt(fecha.substring(0, indexA));
             mes = Integer.parseInt(fecha.substring(indexA + 1, indexB));
             anio = Integer.parseInt(fecha.substring(indexB + 1));
@@ -39,73 +39,77 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
                 try {
                     this.wait(1000);
                 } catch (InterruptedException ex) {
-                    Log.logError("ServidorHoroscopo-" + this.ref, "Error en el procesamiento del pronóstico: " + ex.getMessage());
-                    System.err.println("->ServidorHoroscopo: Error en el procesamiento del pronóstico");
+                    Log.logError("ServidorClima-" + this.ref, "Error en el procesamiento del pronóstico: " + ex.getMessage());
+                    System.err.println("->ServidorClima: Error en el procesamiento del pronóstico");
                     return "ESC";
-                    return "error al procesar pronóstico";
                 }
                 indiceRandom = (dia + mes + anio + aleatorio.nextInt(1000)) % this.pronostico.length;
             }
             respuesta = this.pronostico[indiceRandom];
         } else {
-            //respuesta = "La fecha recibida es Invalida " + validacion + "Clima Imp | Id Remota: " + this.ref;
+            //Solicitud no valida por el protocolo
+            Log.logError("ServidorClima-" + this.ref, "Solicitud invalida");
             respuesta = validacion;
         }
+        Log.logInfo("ServidorClima-" + this.ref, "Se responde al Cliente: " + respuesta);
+        System.out.println("->ServidorClima: Se responde a una solicitud");
         return respuesta;
     }
 
     private String validarFecha(String fecha) {
-        // modulo que a partir de la fecha recibida verfica si cumple el formato, y luego verifica que sea una fecha valida
-        // en caso de no serlo retorna el error que tiene la fecha, caso contrario retorna "valida"
-        String respuesta = "";
+        //Verifica que el parametro recibido cumple el protocolo y es una fecha valida
+        //retorna "valida" si lo es o el tipo de error si no
+        String respuesta;
         int indexA = fecha.indexOf("-"), indexB = fecha.indexOf("-", indexA + 1),
                 dia, mes, anio;
 
-        //se verifica que la fecha recibida cumpla el formato DD-MM-A... (el año puede ser desde 0 en adelante)        
+        //Se verifica que la fecha recibida cumpla el formato DD-MM-A... (el año puede ser desde 0 en adelante)        
         if (indexA == 2 && indexB == 5 && fecha.length() >= 7) {
             try {
-                //luego se obtiene los valores para cada dia, mes y año.
-                //si alguno no es un nro entero, entonces se lanza una excepción y se invalida la operación
+                //Luego se obtiene los valores para cada dia, mes y año.
                 dia = Integer.parseInt(fecha.substring(0, indexA));
                 mes = Integer.parseInt(fecha.substring(indexA + 1, indexB));
                 anio = Integer.parseInt(fecha.substring(indexB + 1));
-
-                // se controla que el dia sea valido
-                if (dia >= 1 && dia <= 31) {
-                    // si el mes es febrero, se verifica si el año es bisiesto, y que el dia sea menor a 29 dias,
-                    // caso contrario 28 dias                    
-                    if (mes == 2) {
-                        if ((anio % 4 == 0 && anio % 100 != 0) || anio % 400 == 0) {
-                            if (dia <= 29) {
-                                respuesta = "valida";
-                            } else {
-                                //error en el dia recibido, la fecha tiene mas dias de los que permite febrero bisiesto
-                                respuesta = "FD";
-                            }
-                        } else if (dia <= 28) {
-                            respuesta = "valida";
-                        } else {
-                            //error en el dia recibido, la fecha tiene mas dias de los que permite febrero no bisiesto
-                            respuesta = "FD";
-                        }
-                        //si no es feberero, se verifican para los meses restantes si tiene 30 o 31 dias
-                    } else if ((mes == 4 || mes == 6 || mes == 7 || mes == 11) && dia <= 30) {
-                        respuesta = "valida";
-                    } else if ((mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12) && dia <= 31) {
-                        respuesta = "valida";
-                    } else {
-                        //error en el mes recibido, la fecha cuenta con un valor de mes invalido
-                        respuesta = "FM";
-                    }
-                } else {
-                    //error en el dia recibido, la fecha cuenta con más de 31 días o 0
-                    respuesta = "FD";
-                }
             } catch (NumberFormatException ex) {
+                //Un valor no es un numero entero
                 return "PC"; //Protocolo Clima
             }
+            //Se controla que el dia sea valido
+            if (dia >= 1 && dia <= 31) {
+                //Si el mes es febrero, se verifica si el año es bisiesto, y que el dia sea 
+                //menor a 29 dias, caso contrario 28 dias                    
+                if (mes == 2) {
+                    if ((anio % 4 == 0 && anio % 100 != 0) || anio % 400 == 0) {
+                        if (dia <= 29) {
+                            respuesta = "valida";
+                        } else {
+                            //Error en el dia recibido, la fecha tiene mas dias 
+                            //de los que permite febrero bisiesto
+                            respuesta = "FD";
+                        }
+                    } else if (dia <= 28) {
+                        respuesta = "valida";
+                    } else {
+                        //Error en el dia recibido, la fecha tiene mas dias de 
+                        //los que permite febrero no bisiesto
+                        respuesta = "FD";
+                    }
+                    //Si no es feberero, se verifican para los meses restantes si tiene 30 o 31 dias
+                } else if ((mes == 4 || mes == 6 || mes == 7 || mes == 11) && dia <= 30) {
+                    respuesta = "valida";
+                } else if ((mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12) && dia <= 31) {
+                    respuesta = "valida";
+                } else {
+                    //Error en el mes recibido, la fecha cuenta con un valor de mes invalido
+                    respuesta = "FM";
+                }
+            } else {
+                //Error en el dia recibido, la fecha cuenta con más de 31 días
+                respuesta = "FD";
+            }
+
         } else {
-            // error en el formato de la fecha recibida, no se respetó el formato
+            //Wrror en el formato de la fecha recibida, no se respetó el formato
             respuesta = "PC"; //Protocolo Clima
         }
         return respuesta;
