@@ -6,8 +6,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-public class Cliente implements Runnable {
-    //comentario para commit////////////////////////////////////////
+public class Cliente implements Runnable {    
 
     private String name;
     private String ipAdress = "127.0.0.1";
