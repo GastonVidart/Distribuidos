@@ -15,14 +15,14 @@ public class PublicadorServerHoroscopo {
         try {
             Log.startLog("LogCentral.txt");
         } catch (SecurityException | IOException ex) {
-            System.out.println("->ServerHoroscopo: no se pudo iniciar el Log");
+            System.out.println("->ServerHoroscopo: No se pudo iniciar el Log");
         }
 
         //Conectar a rmi
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
             System.setProperty("java.rmi.server.hostname", "localhost");
-            Log.logInfo("ServerHoroscopo", "se conecto a rmi");
+            Log.logInfo("ServerHoroscopo", "Se conecto a rmi");
         }
         
         //Publicar el ServidorHoroscopo en rmi

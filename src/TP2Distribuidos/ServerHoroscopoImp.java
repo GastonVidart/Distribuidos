@@ -10,7 +10,7 @@ public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHor
 
     private ArrayList<String> protocoloHoroscopo;
 
-    private static String[] predicciones = {"Para sanar sus heridas se debera cumplir un reto que se le presentara al medio dia",
+    private static String[] pronostico = {"Para sanar sus heridas se debera cumplir un reto que se le presentara al medio dia",
         "Se debera cuidar de sus amigos, pues ellos podran revelarle algo inesperado",
         "Las relaciones con sus pares seran muy llenadoras, aprovechelas porque no se le presentara por un tiempo",
         "Arriesguese a lo que desea, hoy es un dia para hacerle frente a su futuro",
@@ -51,7 +51,7 @@ public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHor
                     System.err.println("->ServidorHoroscopo: Error en el procesamiento del pronóstico");
                     return "ESH";
                 }
-                respuesta = predicciones[aleatorio.nextInt(predicciones.length)];
+                respuesta = pronostico[aleatorio.nextInt(pronostico.length)];
             }
         } else {
             Log.logError("ServidorHoroscopo-" + this.ref, "Solicitud invalida");
