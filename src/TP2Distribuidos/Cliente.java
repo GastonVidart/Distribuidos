@@ -5,6 +5,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class Cliente implements Runnable {
 
@@ -28,18 +29,26 @@ public class Cliente implements Runnable {
         try {
 //            String pronosticoHoroscopo, pronosticoClima;
             ArrayList<String> respuestas;
+            Log.logger.info("Cliente: comienza su ejecución");
+            
             serverCentral = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
-
+            Log.logger.info("Cliente: pudo conectarse al ServerCentral");
+            
             respuestas = serverCentral.getPronostico(horoscopo, fecha);
-
+            Log.logger.info("Cliente: solicito un pronostico del ServerCentral");
+            
             if (respuestas.size() == 1) {
                 mostrarError(respuestas.get(0));
+                Log.logger.log(Level.INFO, "Cliente: recibe un mensaje de error: {0}", respuestas.get(0));
             } else if (respuestas.isEmpty() || respuestas.size() > 2) {
                 mostrarError("SC");
+                Log.logger.info("Cliente: hubo un error con el ServidorCentral");
             } else {
-                System.out.println("->" + name + " recibio: \n"
+                String mensaje = "->" + name + " recibio: \n"
                         + "----Pronostico Horoscopo: " + respuestas.get(0)
-                        + "\n----Pronostico Clima: " + respuestas.get(1));
+                        + "\n----Pronostico Clima: " + respuestas.get(1);  
+                System.out.println(mensaje);
+                Log.logger.log(Level.INFO, "Cliente: muestra el mensaje:\n{0}", mensaje);                
             }
 
 //            pronosticoClima = serverCentral.getPronosticoClima(fecha);
