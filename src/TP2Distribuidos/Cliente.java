@@ -34,7 +34,7 @@ public class Cliente implements Runnable {
         try {
             //Conectar al ServerCentral mediante rmi
             serverCentral = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
-            Log.logInfo(name, "Se conectó al Servidor Central con id: " + serverCentral.ref);
+            Log.logInfo(name, "Se conectó al Servidor Central");            
 
             //Solicitar un pronostico
             ArrayList<String> respuestas;

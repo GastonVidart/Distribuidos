@@ -22,7 +22,6 @@ public class PublicadorServerHoroscopo {
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
             System.setProperty("java.rmi.server.hostname", "localhost");
-            Log.logInfo("ServerHoroscopo", "Se conecto a rmi");
         }
         
         //Publicar el ServidorHoroscopo en rmi

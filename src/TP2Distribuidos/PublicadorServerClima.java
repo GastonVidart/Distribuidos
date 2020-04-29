@@ -21,7 +21,6 @@ class PublicadorServerClima {
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
             System.setProperty("java.rmi.server.hostname", "localhost");
-            Log.logInfo("ServerClima", "Se conecto a rmi");
         }
         
         //Publicar el ServidorClima en rmi

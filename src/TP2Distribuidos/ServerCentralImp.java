@@ -19,7 +19,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
     private ListString protocoloHoroscopo;
 
     public ServerCentralImp(String ip, int puerto) throws RemoteException {
-        Hashtable<String, String[]> mapa = new Hashtable<String, String[]>();
+        Hashtable<String, String[]> mapa = new Hashtable<>();
         this.cache = Collections.synchronizedMap(mapa);
         this.semaforoCache = new Semaphore(1);
         String[] horoscopo = {"AR", "TA", "GE", "CC", "LE", "VG", "LB", "ES", "SA", "CP", "AC", "PI"};
