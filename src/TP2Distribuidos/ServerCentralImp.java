@@ -43,6 +43,27 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
         }
     }
 
+    ServerCentralImp(String ipHoroscopo, int portHoroscopo, String ipClima, int portClima) {
+        Hashtable<String, String[]> mapa = new Hashtable<>();
+        this.cache = Collections.synchronizedMap(mapa);
+        this.semaforoCache = new Semaphore(1);
+
+        this.protocoloHoroscopo = new ArrayList<>();
+        this.protocoloHoroscopo.addAll(Arrays.asList(
+                new String[]{"AR", "TA", "GE", "CC", "LE", "VG", "LB", "ES", "SA", "CP", "AC", "PI"}));
+
+        //Se conecta con los Servidores de Horoscopo y Clima
+        try {
+            this.svrHoroscopo = (ServerHoroscopo) Naming.lookup("//" + ipHoroscopo + ":" + portHoroscopo + "/ServerHoroscopoImp");
+            Log.logInfo(SERVIDORCENTRAL, "Se conecto al Servidor Horoscopo");
+            this.svrClima = (ServerClima) Naming.lookup("//" + ipClima + ":" + portClima + "/ServerClimaImp");
+            Log.logInfo(SERVIDORCENTRAL, "Se conecto al Servidor Clima");
+        } catch (NotBoundException | MalformedURLException | RemoteException ex) {
+            Log.logError(SERVIDORCENTRAL, ex.getMessage());
+            System.err.println("->ServidorCentral: ERROR: " + ex.getMessage());
+        }
+    }
+
     @Override
     public ArrayList<String> getPronostico(String horoscopo, String fecha, String clientName) {
         //Se verifica que la solicitud sea válida y se responde con un 

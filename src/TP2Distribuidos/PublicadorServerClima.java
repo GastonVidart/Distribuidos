@@ -10,6 +10,19 @@ class PublicadorServerClima {
     private static int port = 10001;
 
     public static void main(String[] args) {
+        //Verificar los parametros recibidos
+        if (args.length != 1) {
+            System.err.println("El parametro es incorrecto, ingrese puerto donde se conectara");
+            return;
+        } else {
+            try {
+                port = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                System.err.println("Puerto ingresado no valido");
+                return;
+            }
+        }
+
         //Iniciar el Log
         try {
             Log.startLog("LogClima.txt");
@@ -22,18 +35,18 @@ class PublicadorServerClima {
             System.setSecurityManager(new SecurityManager());
             System.setProperty("java.rmi.server.hostname", "localhost");
         }
-        
+
         //Publicar el ServidorClima en rmi
         try {
             ServerClima serverClima = new ServerClimaImp();
-            Naming.rebind("rmi://" + ipAdress + ":" + port + "/ServerClimaImp", serverClima);           
-            Log.logInfo("ServidorClima",  "Publicado");
+            Naming.rebind("rmi://" + ipAdress + ":" + port + "/ServerClimaImp", serverClima);
+            Log.logInfo("ServidorClima", "Publicado");
             System.out.println("->ServidorClima: Publicado");
         } catch (RemoteException e) {
             Log.logError("ServidorClima", "Error de comunicacion - " + e.getMessage());
             System.err.println("->ServidorClima: Error de comunicacion: " + e.getMessage());
             System.exit(1);
-        } catch (MalformedURLException e) {            
+        } catch (MalformedURLException e) {
             Log.logError("ServidorClima", "Error en la URL de rmi - " + e.getMessage());
             System.err.println("->ServidorClima: Error en la URL de rmi: " + e.getMessage());
             System.exit(1);

@@ -5,6 +5,23 @@ import java.io.IOException;
 public class Test {
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        //Verificar los parametros recibidos
+        String ipAdress;
+        int port;
+        if (args.length != 2) {
+            System.err.println("Los parametros recibidos son incorrectos,"
+                    + " se requiere direccion ip y puerto del servidor a conectar");
+            return;
+        } else {
+            ipAdress = args[0];
+            try {
+                port = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                System.err.println("Puerto ingresado no valido");
+                return;
+            }
+        }
+
         //Iniciar el Log
         try {
             Log.startLog("LogCliente.txt");
@@ -22,11 +39,10 @@ public class Test {
         //Consulta básica
 //        horoscopo = {"CC","CC","CC"};
 //        fecha = {"05-05-2020","05-05-2020","05-05-2020"};
-
         //Crear e iniciar los Clientes
         for (int i = 0; i < fecha.length; i++) {
             Log.logInfo("Cliente " + i, "Se crea el Cliete");
-            new Thread(new Cliente("Cliente " + i, horoscopo[i], fecha[i])).start();
+            new Thread(new Cliente("Cliente " + i, horoscopo[i], fecha[i], ipAdress, port)).start();
         }
 
     }
