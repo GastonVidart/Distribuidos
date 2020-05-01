@@ -1,6 +1,3 @@
-
-package TP2Distribuidos;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.FileHandler;
@@ -29,7 +26,8 @@ public class Log {
     }
     
     public static void logInfo(String system, String message){
-        logger.log(Level.INFO, "->{0}: {1}", new Object[]{system, message});
+        //logger.log(Level.INFO, "->{0}: {1}", new Object[]{system, message});
+		logger.info("->"+system+": "+message);
     }
     
     public static void logError(String system, String message){

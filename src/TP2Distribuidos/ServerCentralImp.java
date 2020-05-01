@@ -1,6 +1,3 @@
-package TP2Distribuidos;
-
-import estructuras.ListString;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -47,12 +44,8 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
     @Override
     public ArrayList<String> getPronostico(String horoscopo, String fecha) {
         //Se verifica que la solicitud sea válida y se responde con un 
-        //pronostico si lo es, o un mensaje de error en caso contrario
-
-        //modulo que recibe las solicitudes de un cliente y a partir de ella, verifica que cumpla el formato principal, 
-        //el cual es prediccion(signo,fecha). Luego verifca si la solicitud ya fue hecha, si es asi responde la respuesta almacenada,
-        //caso contrario solicita un prediccion y un pronostico del clima a cada servidor correspondiente.
-        //finalemente contesta lo que le hayan respondido los servidores (error o respuesta valida).
+        //pronostico si lo es, o un mensaje de error en caso contrario.
+		
         Log.logInfo(SERVIDORCENTRAL, "Se recibe una nueva solicitud de: "
                 + "<" + horoscopo + ", " + fecha + ">");
         System.out.println("->ServidorCentral: Se recibe una solicitud nueva");
@@ -74,13 +67,15 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                                 ? "Consulta encontrada" : "Consulta no encontrada"));
 
                 if (respuestaCache != null) {
-                    //La cache tuvo exito 
-                    while (respuestaCache[0].equals("respuestaEnCurso")) {
-                        Log.logInfo(SERVIDORCENTRAL, "Esperando por respuesta en curso");
-                        semaforoCache.acquire();
-                        respuestaCache = this.cache.get(claveCache);
+                    //La cache tuvo exito 					
+                    if (respuestaCache[0].equals("respuestaEnCurso")) {
+                        while (respuestaCache[0].equals("respuestaEnCurso")) {
+                            Log.logInfo(SERVIDORCENTRAL, "Esperando por respuesta en curso");
+                            semaforoCache.acquire();
+                            respuestaCache = this.cache.get(claveCache);
+                        }
+                        semaforoCache.release();
                     }
-                    semaforoCache.release();
 
                     respuesta.add(respuestaCache[0]);
                     respuesta.add(respuestaCache[1]);
@@ -108,7 +103,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                             clave = horoscopo + fecha;
                             //El valor se forma con las respuestas correctas de ambos servidores
                             valor = new String[]{respuestaHoroscopo, respuestaClima};
-                            Log.logInfo(SERVIDORCENTRAL, "Se almacena en cache la clave: " + clave + " valor: " + valor);
+                            Log.logInfo(SERVIDORCENTRAL, "Se almacena en cache la clave: " + clave);
                             cache.put(clave, valor);
 
                             //Se le responde al cliente la solicitud                          
@@ -116,6 +111,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                             respuesta.add(respuestaClima);
                             //Se libera las consultas iguales en espera, debido que la cache ya tiene su respuesta
                             this.semaforoCache.release();
+							Log.logInfo(SERVIDORCENTRAL, "Se responde al cliente con: <"+respuestaHoroscopo+"; "+respuestaClima+">");
                             Log.logInfo(SERVIDORCENTRAL, "Se libera las consultas iguales en espera, debido que la cache ya tiene su respuesta");
                         } else {
                             //Se le responde al cliente del error en clima
@@ -207,14 +203,13 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
         String respuesta;
 
         //Primero se verifica si es valido para el Protocolo Clima y luego para el de Horoscopo
-        if (validarFecha(fecha).equals("valida")) {
+		respuesta=validarFecha(fecha);
+        if (respuesta.equals("valida")) {
             if (horoscopo.length() == 2 && protocoloHoroscopo.contains(horoscopo)) {
                 respuesta = "valida";
             } else {
                 respuesta = "PH"; //Solicitud no valida por protocolo
             }
-        } else {
-            respuesta = "PC"; //Solicitud no valida por protocolo
         }
         return respuesta;
     }

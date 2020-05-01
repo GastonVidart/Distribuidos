@@ -1,5 +1,3 @@
-package TP2Distribuidos;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.*;
@@ -12,7 +10,7 @@ class PublicadorServerClima {
     public static void main(String[] args) {
         //Iniciar el Log
         try {
-            Log.startLog("LogCentral.txt");
+            Log.startLog("LogClima.txt");
         } catch (SecurityException | IOException ex) {
             System.out.println("->ServerClima: No se pudo iniciar el Log");
         }

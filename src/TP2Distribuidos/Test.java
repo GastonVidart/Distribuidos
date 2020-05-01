@@ -1,5 +1,3 @@
-package TP2Distribuidos;
-
 import java.io.IOException;
 
 public class Test {
@@ -7,7 +5,7 @@ public class Test {
     public static void main(String[] args) throws IOException, InterruptedException {
         //Iniciar el Log
         try {
-            Log.startLog("LogCentral.txt");
+            Log.startLog("LogCliente.txt");
         } catch (SecurityException | IOException ex) {
             System.out.println("->TestCliente: no se pudo iniciar el Log");
         }
