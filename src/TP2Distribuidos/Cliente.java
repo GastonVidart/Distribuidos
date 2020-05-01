@@ -1,3 +1,5 @@
+package TP2Distribuidos;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -37,7 +39,7 @@ public class Cliente implements Runnable {
             //Solicitar un pronostico
             ArrayList<String> respuestas;
             Log.logInfo(name, "Solicita un pronostico con la tupla <" + horoscopo + ", " + fecha + ">");
-            respuestas = serverCentral.getPronostico(horoscopo, fecha);
+            respuestas = serverCentral.getPronostico(horoscopo, fecha, name);
 
             //Procesar la respuesta
             if (respuestas.size() == 1) {

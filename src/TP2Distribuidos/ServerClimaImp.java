@@ -1,3 +1,5 @@
+package TP2Distribuidos;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
@@ -5,21 +7,23 @@ import java.util.Random;
 public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
 
     private String[] pronostico;
+    private String SERVIDORCLIMA = "ServidorClima";
 
     public ServerClimaImp() throws RemoteException {
         super();
 
-        Log.logInfo("ServidorClima-" + this.ref, "Se crea una nueva instancia con id: " + this.ref);
+        Log.logInfo(SERVIDORCLIMA, "Se crea una nueva instancia con id: " + this.ref);
         System.out.println("->ServidorClima: Se crea una nueva instancia");
         this.pronostico = new String[]{"Lluvias Aisladas", "Lluvias Intensas", "Despejado", "Tormentas",
             "Nublado", "Viento", "Chaparrones", "Ciclón", "Ráfagas Fuertes", "Relámpagos"};
     }
 
     @Override
-    public String getClima(String fecha) throws RemoteException {
+    public String getClima(String fecha, String clientName) throws RemoteException {
         //Se verifica que la solicitud sea válida y se responde con un 
         //pronostico si lo es, o un mensaje de error en caso contrario
-        Log.logInfo("ServidorClima-" + this.ref, "Se solicita un pronostico del clima para la fecha: " + fecha);
+        SERVIDORCLIMA += "-" + clientName;
+        Log.logInfo(SERVIDORCLIMA, "Se solicita un pronostico del clima para la fecha: " + fecha);
         System.out.println("->ServidorClima: Se solicita un horoscopo");
         String respuesta, rtaValidacion;
         Random aleatorio = new Random();
@@ -28,7 +32,7 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
 
         rtaValidacion = validarFecha(fecha);
         if (rtaValidacion.equals("valida")) {
-            Log.logInfo("ServidorClima-" + this.ref, "Solicitud valida");
+            Log.logInfo(SERVIDORCLIMA, "Solicitud valida");
             dia = Integer.parseInt(fecha.substring(0, indexA));
             mes = Integer.parseInt(fecha.substring(indexA + 1, indexB));
             anio = Integer.parseInt(fecha.substring(indexB + 1));
@@ -37,7 +41,7 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
                 try {
                     this.wait(1000);
                 } catch (InterruptedException ex) {
-                    Log.logError("ServidorClima-" + this.ref, "Error en el procesamiento del pronóstico: " + ex.getMessage());
+                    Log.logError(SERVIDORCLIMA, "Error en el procesamiento del pronóstico: " + ex.getMessage());
                     System.err.println("->ServidorClima: Error en el procesamiento del pronóstico");
                     return "ESC";
                 }
@@ -46,10 +50,10 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
             respuesta = this.pronostico[indiceRandom];
         } else {
             //Solicitud no valida por el protocolo
-            Log.logError("ServidorClima-" + this.ref, "Solicitud invalida");
+            Log.logError(SERVIDORCLIMA, "Solicitud invalida");
             respuesta = rtaValidacion;
         }
-        Log.logInfo("ServidorClima-" + this.ref, "Se responde al Cliente: " + respuesta);
+        Log.logInfo(SERVIDORCLIMA, "Se responde al Cliente: " + respuesta);
         System.out.println("->ServidorClima: Se responde a una solicitud");
         return respuesta;
     }

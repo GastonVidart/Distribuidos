@@ -1,3 +1,5 @@
+package TP2Distribuidos;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;

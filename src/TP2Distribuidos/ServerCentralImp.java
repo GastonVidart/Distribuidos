@@ -1,3 +1,5 @@
+package TP2Distribuidos;
+
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
@@ -18,7 +20,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
     private Semaphore semaforoCache;
     private ArrayList<String> protocoloHoroscopo;
 
-    private final String SERVIDORCENTRAL = "ServidorCentral-" + this.ref;
+    private String SERVIDORCENTRAL = "ServidorCentral";
 
     public ServerCentralImp(String ip, int puerto) throws RemoteException {
         Hashtable<String, String[]> mapa = new Hashtable<>();
@@ -42,13 +44,14 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
     }
 
     @Override
-    public ArrayList<String> getPronostico(String horoscopo, String fecha) {
+    public ArrayList<String> getPronostico(String horoscopo, String fecha, String clientName) {
         //Se verifica que la solicitud sea válida y se responde con un 
         //pronostico si lo es, o un mensaje de error en caso contrario.
-		
+
+        SERVIDORCENTRAL += "-" + clientName;
         Log.logInfo(SERVIDORCENTRAL, "Se recibe una nueva solicitud de: "
                 + "<" + horoscopo + ", " + fecha + ">");
-        System.out.println("->ServidorCentral: Se recibe una solicitud nueva");
+        System.out.println("->ServidorCentral: Se recibe una solicitud nueva de: " + clientName);
 
         String respuestaHoroscopo, respuestaClima, rtaValidacion,
                 claveCache, clave;
@@ -89,8 +92,8 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                     Log.logInfo(SERVIDORCENTRAL, "Realiza una consulta a los Servidores");
                     cache.put(claveCache, new String[]{"respuestaEnCurso"});
 
-                    respuestaHoroscopo = svrHoroscopo.getHoroscopo(horoscopo);
-                    respuestaClima = svrClima.getClima(fecha);
+                    respuestaHoroscopo = svrHoroscopo.getHoroscopo(horoscopo, clientName);
+                    respuestaClima = svrClima.getClima(fecha, clientName);
                     //Si ambas consultas fueron validas, responde al cliente y almacena la  
                     //respuesta en cache, caso contrario caso contrario retransmite el error           
                     if (!respuestaHoroscopo.contains("ESH") && !respuestaHoroscopo.contains("PH")) {
@@ -111,7 +114,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                             respuesta.add(respuestaClima);
                             //Se libera las consultas iguales en espera, debido que la cache ya tiene su respuesta
                             this.semaforoCache.release();
-							Log.logInfo(SERVIDORCENTRAL, "Se responde al cliente con: <"+respuestaHoroscopo+"; "+respuestaClima+">");
+                            Log.logInfo(SERVIDORCENTRAL, "Se responde al cliente con: <" + respuestaHoroscopo + "; " + respuestaClima + ">");
                             Log.logInfo(SERVIDORCENTRAL, "Se libera las consultas iguales en espera, debido que la cache ya tiene su respuesta");
                         } else {
                             //Se le responde al cliente del error en clima
@@ -203,7 +206,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
         String respuesta;
 
         //Primero se verifica si es valido para el Protocolo Clima y luego para el de Horoscopo
-		respuesta=validarFecha(fecha);
+        respuesta = validarFecha(fecha);
         if (respuesta.equals("valida")) {
             if (horoscopo.length() == 2 && protocoloHoroscopo.contains(horoscopo)) {
                 respuesta = "valida";
