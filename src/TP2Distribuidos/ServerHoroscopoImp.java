@@ -32,15 +32,15 @@ public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHor
     }
 
     @Override
-    public String getHoroscopo(String solicitud) throws RemoteException {
-        //Se verifica que la solicitud sea válida y se responde con un 
+    public String getHoroscopo(String horoscopo) throws RemoteException {
+        //Se verifica que la horoscopo sea válida y se responde con un 
         //pronostico si lo es, o un mensaje de error en caso contrario
-        Log.logInfo("ServidorHoroscopo-" + this.ref, "Se solicita un horoscopo");
+        Log.logInfo("ServidorHoroscopo-" + this.ref, "Se solicita un horoscopo para el signo: " + horoscopo);
         System.out.println("->ServidorHoroscopo: Se solicita un horoscopo");
         String respuesta;
         Random aleatorio = new Random();
 
-        if (solicitud.length() == 2 && protocoloHoroscopo.contains(solicitud)) {
+        if (horoscopo.length() == 2 && protocoloHoroscopo.contains(horoscopo)) {
             Log.logInfo("ServidorHoroscopo-" + this.ref, "Solicitud valida");
             synchronized (this) {
                 //Se obtiene una predicción aleatoria y se simula su procesamiento (tiempo de espera 1 seg)
@@ -58,7 +58,7 @@ public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHor
             respuesta = "PH"; //Solicitud no valida por el protocolo
         }
         Log.logInfo("ServidorHoroscopo-" + this.ref, "Se responde al Cliente: " + respuesta);
-        System.out.println("->ServidorHoroscopo: Se responde a una solicitud");
+        System.out.println("->ServidorHoroscopo: Se responde a una horoscopo");
         return respuesta;
     }
 }

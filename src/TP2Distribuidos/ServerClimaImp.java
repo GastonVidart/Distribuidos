@@ -21,15 +21,15 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
     public String getClima(String fecha) throws RemoteException {
         //Se verifica que la solicitud sea válida y se responde con un 
         //pronostico si lo es, o un mensaje de error en caso contrario
-        Log.logInfo("ServidorClima-" + this.ref, "Se solicita un horoscopo");
+        Log.logInfo("ServidorClima-" + this.ref, "Se solicita un pronostico del clima para la fecha: " + fecha);
         System.out.println("->ServidorClima: Se solicita un horoscopo");
-        String respuesta, validacion;
+        String respuesta, rtaValidacion;
         Random aleatorio = new Random();
         int indiceRandom, dia, mes, anio,
                 indexA = fecha.indexOf("-"), indexB = fecha.indexOf("-", indexA + 1);
 
-        validacion = validarFecha(fecha);
-        if (validacion.equals("valida")) {
+        rtaValidacion = validarFecha(fecha);
+        if (rtaValidacion.equals("valida")) {
             Log.logInfo("ServidorClima-" + this.ref, "Solicitud valida");
             dia = Integer.parseInt(fecha.substring(0, indexA));
             mes = Integer.parseInt(fecha.substring(indexA + 1, indexB));
@@ -49,7 +49,7 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
         } else {
             //Solicitud no valida por el protocolo
             Log.logError("ServidorClima-" + this.ref, "Solicitud invalida");
-            respuesta = validacion;
+            respuesta = rtaValidacion;
         }
         Log.logInfo("ServidorClima-" + this.ref, "Se responde al Cliente: " + respuesta);
         System.out.println("->ServidorClima: Se responde a una solicitud");
@@ -97,7 +97,8 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
                     //Si no es feberero, se verifican para los meses restantes si tiene 30 o 31 dias
                 } else if ((mes == 4 || mes == 6 || mes == 7 || mes == 11) && dia <= 30) {
                     respuesta = "valida";
-                } else if ((mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8 || mes == 10 || mes == 12) && dia <= 31) {
+                } else if ((mes == 1 || mes == 3 || mes == 5 || mes == 7 || mes == 8
+                        || mes == 10 || mes == 12) && dia <= 31) {
                     respuesta = "valida";
                 } else {
                     //Error en el mes recibido, la fecha cuenta con un valor de mes invalido
