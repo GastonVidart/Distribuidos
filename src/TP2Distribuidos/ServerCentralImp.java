@@ -31,9 +31,9 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
 
         //Se conecta con los Servidores de Horoscopo y Clima
         try {
-            this.svrHoroscopo = (ServerHoroscopo) Naming.lookup("//" + ip + ":" + puerto + "/ServerHoroscopoImp");
+            this.svrHoroscopo = (ServerHoroscopo) Naming.lookup("//" + ip + ":" + puerto + "/ServerHoroscopo");
             Log.logInfo(SERVIDORCENTRAL, "Se conecto al Servidor Horoscopo");
-            this.svrClima = (ServerClima) Naming.lookup("//" + ip + ":" + puerto + "/ServerClimaImp");
+            this.svrClima = (ServerClima) Naming.lookup("//" + ip + ":" + puerto + "/ServerClima");
             Log.logInfo(SERVIDORCENTRAL, "Se conecto al Servidor Clima");
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             Log.logError(SERVIDORCENTRAL, ex.getMessage());

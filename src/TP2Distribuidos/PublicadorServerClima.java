@@ -24,7 +24,7 @@ class PublicadorServerClima {
         //Publicar el ServidorClima en rmi
         try {
             ServerClima serverClima = new ServerClimaImp();
-            Naming.rebind("rmi://" + ipAdress + ":" + port + "/ServerClimaImp", serverClima);           
+            Naming.rebind("rmi://" + ipAdress + ":" + port + "/ServerClima", serverClima);           
             Log.logInfo("ServidorClima",  "Publicado");
             System.out.println("->ServidorClima: Publicado");
         } catch (RemoteException e) {

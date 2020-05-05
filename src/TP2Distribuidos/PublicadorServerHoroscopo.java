@@ -25,7 +25,7 @@ public class PublicadorServerHoroscopo {
         //Publicar el ServidorHoroscopo en rmi
         try {
             ServerHoroscopo serverHoroscopo = new ServerHoroscopoImp();
-            Naming.rebind("rmi://" + ipAdress + ":" + port + "/ServerHoroscopoImp", serverHoroscopo);            
+            Naming.rebind("rmi://" + ipAdress + ":" + port + "/ServerHoroscopo", serverHoroscopo);            
             Log.logInfo("ServidorHoroscopo",  "Publicado");
             System.out.println("->ServidorHoroscopo: Publicado");
         } catch (RemoteException e) {
