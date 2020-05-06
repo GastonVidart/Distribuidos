@@ -9,17 +9,11 @@ import java.util.ArrayList;
 public class Cliente implements Runnable {
 
     private String name;
-    private String ipAdress = "127.0.0.1";
-    private int port = 10001;
+    private String ipAdress;
+    private int port;
     private ServerCentral serverCentral;
     private String horoscopo;
     private String fecha;
-
-    public Cliente(String name, String horoscopo, String fecha) {
-        this.name = name;
-        this.horoscopo = horoscopo;
-        this.fecha = fecha;
-    }
 
     public Cliente(String name, String horoscopo, String fecha, String ipAdress, int port) {
         this.name = name;
@@ -65,7 +59,7 @@ public class Cliente implements Runnable {
         String msg = "ERROR: DESCONOCIDO";
         switch (error) {
             case "ESH":
-                msg = "ERROR: ERROR POR PARTE DEL SERVIDOR DE HORÓSCOPOS";
+                msg = "ERROR: ERROR POR PARTE DEL SERVIDOR DE HOROSCOPOS";
                 break;
             case "PH":
                 msg = "ERROR: ERROR EN EL PROTOCOLO DEL HOROSCOPO";

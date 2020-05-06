@@ -7,8 +7,8 @@ import java.rmi.RemoteException;
 
 public class PublicadorServerHoroscopo {
 
-    private static String ipAdress = "127.0.0.1";
-    private static int port = 10001;
+    private static String ipAdress = "127.0.0.1"; //La ip se define local por defecto
+    private static int port;
 
     public static void main(String[] args) {
         //Verificar los parametros recibidos

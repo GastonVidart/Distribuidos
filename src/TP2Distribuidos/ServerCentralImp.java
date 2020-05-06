@@ -86,7 +86,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                 } else {
                     //Si la cache no tuvo exito se realiza la consulta
 
-                    //Se espera a tener la respuesta para no realizar mas de una consulta igual al mismo tiempo
+                    //Se bloquea a los siguientes hilos para que no busquen una consulta igual a otro
                     semaforoCache.acquire();
                     Log.logInfo(servidorCentralStr, "Realiza una consulta a los Servidores");
                     cache.put(claveCache, new String[]{"respuestaEnCurso"});

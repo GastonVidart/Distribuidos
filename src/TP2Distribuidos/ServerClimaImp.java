@@ -14,7 +14,7 @@ public class ServerClimaImp extends UnicastRemoteObject implements ServerClima {
         Log.logInfo("ServidorClima", "Se crea una nueva instancia con id: " + this.ref);
         System.out.println("->ServidorClima: Se crea una nueva instancia");
         this.pronostico = new String[]{"Lluvias Aisladas", "Lluvias Intensas", "Despejado", "Tormentas",
-            "Nublado", "Viento", "Chaparrones", "Ciclon", "Ráfagas Fuertes", "Relámpagos"};
+            "Nublado", "Viento", "Chaparrones", "Ciclon", "Rafagas Fuertes", "Relampagos"};
     }
 
     @Override

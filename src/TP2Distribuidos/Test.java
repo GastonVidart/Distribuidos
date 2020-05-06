@@ -39,6 +39,7 @@ public class Test {
         //Consulta básica
 //        horoscopo = {"CC","CC","CC"};
 //        fecha = {"05-05-2020","05-05-2020","05-05-2020"};
+
         //Crear e iniciar los Clientes
         for (int i = 0; i < fecha.length; i++) {
             Log.logInfo("Cliente " + i, "Se crea el Cliete");
