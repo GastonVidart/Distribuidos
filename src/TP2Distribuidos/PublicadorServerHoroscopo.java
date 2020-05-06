@@ -13,7 +13,7 @@ public class PublicadorServerHoroscopo {
     public static void main(String[] args) {
         //Verificar los parametros recibidos
         if (args.length != 1) {
-            System.err.println("El parametro es incorrecto, ingrese puerto donde se conectara");
+            System.err.println("El parametro es incorrecto, ingrese el puerto donde se conectara");
             return;
         } else {
             try {

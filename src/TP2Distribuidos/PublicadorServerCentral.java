@@ -15,10 +15,10 @@ public class PublicadorServerCentral {
         String ipHoroscopo, ipClima;
         int portHoroscopo, portClima;
         if (args.length != 5) {
-            System.err.println("Los parametros recibidos son incorrectos, "
-                    + "se requiere direccion ip y puerto del servidor horoscopo, "
-                    + "direccion ip y puerto del servidor clima y puerto donde"
-                    + " se ejecutara el servidor central");
+            System.err.println("Los parametros recibidos son incorrectos se requiere:"
+                    + "\nDireccion ip y puerto del servidor horoscopo, "
+                    + "\nDireccion ip y puerto del servidor clima,"
+                    + "\nPuerto donde se ejecutara el servidor central");
             return;
         } else {
             ipHoroscopo = args[0];

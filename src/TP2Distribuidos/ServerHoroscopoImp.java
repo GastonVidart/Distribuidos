@@ -8,8 +8,7 @@ import java.util.Random;
 
 public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHoroscopo {
 
-    private ArrayList<String> protocoloHoroscopo;
-    private String SERVIDORHOROSCOPO = "ServidorHoroscopo";
+    private ArrayList<String> protocoloHoroscopo;    
 
     private static String[] pronostico = {"Para sanar sus heridas se debera cumplir un reto que se le presentara al medio dia",
         "Se debera cuidar de sus amigos, pues ellos podran revelarle algo inesperado",
@@ -25,7 +24,7 @@ public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHor
     public ServerHoroscopoImp() throws RemoteException {
         super();
 
-        Log.logInfo(SERVIDORHOROSCOPO, "Se crea una nueva instancia con id: " + this.ref);
+        Log.logInfo("ServidorHoroscopo", "Se crea una nueva instancia con id: " + this.ref);
         System.out.println("->ServidorHoroscopo: Se crea una nueva instancia");
         this.protocoloHoroscopo = new ArrayList<>();
         this.protocoloHoroscopo.addAll(Arrays.asList(
@@ -36,30 +35,30 @@ public class ServerHoroscopoImp extends UnicastRemoteObject implements ServerHor
     public String getHoroscopo(String horoscopo, String clientName) throws RemoteException {
         //Se verifica que la horoscopo sea válida y se responde con un 
         //pronostico si lo es, o un mensaje de error en caso contrario
-        SERVIDORHOROSCOPO += "-" + clientName;
-        Log.logInfo(SERVIDORHOROSCOPO, "Se solicita un horoscopo para el signo: " + horoscopo);
+        String servidorHoroscopoStr = "ServidorHoroscopo-" + clientName;
+        Log.logInfo(servidorHoroscopoStr, "Se solicita un horoscopo para el signo: " + horoscopo);
         System.out.println("->ServidorHoroscopo: Se solicita un horoscopo");
         String respuesta;
         Random aleatorio = new Random();
 
         if (horoscopo.length() == 2 && protocoloHoroscopo.contains(horoscopo)) {
-            Log.logInfo(SERVIDORHOROSCOPO, "Solicitud valida");
+            Log.logInfo(servidorHoroscopoStr, "Solicitud valida");
             synchronized (this) {
                 //Se obtiene una predicción aleatoria y se simula su procesamiento (tiempo de espera 1 seg)
                 try {
                     this.wait(1000);
                 } catch (InterruptedException ex) {
-                    Log.logError(SERVIDORHOROSCOPO, "Error en el procesamiento del pronóstico: " + ex.getMessage());
-                    System.err.println("->ServidorHoroscopo: Error en el procesamiento del pronóstico");
+                    Log.logError(servidorHoroscopoStr, "Error en el procesamiento del pronostico: " + ex.getMessage());
+                    System.err.println("->ServidorHoroscopo: Error en el procesamiento del pronostico");
                     return "ESH";
                 }
                 respuesta = pronostico[aleatorio.nextInt(pronostico.length)];
             }
         } else {
-            Log.logError(SERVIDORHOROSCOPO, "Solicitud invalida");
+            Log.logError(servidorHoroscopoStr, "Solicitud invalida");
             respuesta = "PH"; //Solicitud no valida por el protocolo
         }
-        Log.logInfo(SERVIDORHOROSCOPO, "Se responde al Cliente: " + respuesta);
+        Log.logInfo(servidorHoroscopoStr, "Se responde al Cliente: " + respuesta);
         System.out.println("->ServidorHoroscopo: Se responde a una horoscopo");
         return respuesta;
     }

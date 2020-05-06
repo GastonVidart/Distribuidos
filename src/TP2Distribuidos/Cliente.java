@@ -34,7 +34,7 @@ public class Cliente implements Runnable {
         try {
             //Conectar al ServerCentral mediante rmi
             serverCentral = (ServerCentral) Naming.lookup("//" + ipAdress + ":" + port + "/ServerCentral");
-            Log.logInfo(name, "Se conectó al Servidor Central");            
+            Log.logInfo(name, "Se conecto al Servidor Central");            
 
             //Solicitar un pronostico
             ArrayList<String> respuestas;
@@ -57,6 +57,7 @@ public class Cliente implements Runnable {
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
             Log.logError(name, ex.getMessage());
             System.err.println("->" + name + ": ERROR: " + ex.getMessage());
+            System.exit(1);
         }
     }
 

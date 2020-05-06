@@ -18,9 +18,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
     private ServerClima svrClima;
     private Map<String, String[]> cache;
     private Semaphore semaforoCache;
-    private ArrayList<String> protocoloHoroscopo;
-
-    private String SERVIDORCENTRAL = "ServidorCentral";
+    private ArrayList<String> protocoloHoroscopo;    
 
     public ServerCentralImp(String ipHoroscopo, int portHoroscopo, String ipClima, int portClima) throws RemoteException{
         Hashtable<String, String[]> mapa = new Hashtable<>();
@@ -33,13 +31,14 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
 
         //Se conecta con los Servidores de Horoscopo y Clima
         try {
-            this.svrHoroscopo = (ServerHoroscopo) Naming.lookup("//" + ipHoroscopo + ":" + portHoroscopo + "/ServerHoroscopoImp");
-            Log.logInfo(SERVIDORCENTRAL, "Se conecto al Servidor Horoscopo");
-            this.svrClima = (ServerClima) Naming.lookup("//" + ipClima + ":" + portClima + "/ServerClimaImp");
-            Log.logInfo(SERVIDORCENTRAL, "Se conecto al Servidor Clima");
+            this.svrHoroscopo = (ServerHoroscopo) Naming.lookup("//" + ipHoroscopo + ":" + portHoroscopo + "/ServerHoroscopo");
+            Log.logInfo("ServidorCentral", "Se conecto al Servidor Horoscopo");
+            this.svrClima = (ServerClima) Naming.lookup("//" + ipClima + ":" + portClima + "/ServerClima");
+            Log.logInfo("ServidorCentral", "Se conecto al Servidor Clima");
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {
-            Log.logError(SERVIDORCENTRAL, ex.getMessage());
+            Log.logError("ServidorCentral", ex.getMessage());
             System.err.println("->ServidorCentral: ERROR: " + ex.getMessage());
+            System.exit(1);
         }
     }
 
@@ -48,8 +47,8 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
         //Se verifica que la solicitud sea válida y se responde con un 
         //pronostico si lo es, o un mensaje de error en caso contrario.
 
-        SERVIDORCENTRAL += "-" + clientName;
-        Log.logInfo(SERVIDORCENTRAL, "Se recibe una nueva solicitud de: "
+        String servidorCentralStr = "ServidorCentral-" + clientName;
+        Log.logInfo(servidorCentralStr, "Se recibe una nueva solicitud de: "
                 + "<" + horoscopo + ", " + fecha + ">");
         System.out.println("->ServidorCentral: Se recibe una solicitud nueva de: " + clientName);
 
@@ -65,7 +64,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                 //Se consulta de la cache
                 claveCache = horoscopo + fecha;
                 respuestaCache = cache.get(claveCache);
-                Log.logInfo(SERVIDORCENTRAL, "La consulta a la cache con la clave: " + claveCache
+                Log.logInfo(servidorCentralStr, "La consulta a la cache con la clave: " + claveCache
                         + " respondio: " + (respuestaCache != null
                                 ? "Consulta encontrada" : "Consulta no encontrada"));
 
@@ -73,7 +72,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                     //La cache tuvo exito 					
                     if (respuestaCache[0].equals("respuestaEnCurso")) {
                         while (respuestaCache[0].equals("respuestaEnCurso")) {
-                            Log.logInfo(SERVIDORCENTRAL, "Esperando por respuesta en curso");
+                            Log.logInfo(servidorCentralStr, "Esperando por respuesta en curso");
                             semaforoCache.acquire();
                             respuestaCache = this.cache.get(claveCache);
                         }
@@ -82,14 +81,14 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
 
                     respuesta.add(respuestaCache[0]);
                     respuesta.add(respuestaCache[1]);
-                    Log.logInfo(SERVIDORCENTRAL, "La cache respondio: "
+                    Log.logInfo(servidorCentralStr, "La cache respondio: "
                             + "<" + respuestaCache[0] + "; " + respuestaCache[1] + ">");
                 } else {
                     //Si la cache no tuvo exito se realiza la consulta
 
                     //Se espera a tener la respuesta para no realizar mas de una consulta igual al mismo tiempo
                     semaforoCache.acquire();
-                    Log.logInfo(SERVIDORCENTRAL, "Realiza una consulta a los Servidores");
+                    Log.logInfo(servidorCentralStr, "Realiza una consulta a los Servidores");
                     cache.put(claveCache, new String[]{"respuestaEnCurso"});
 
                     respuestaHoroscopo = svrHoroscopo.getHoroscopo(horoscopo, clientName);
@@ -106,7 +105,7 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                             clave = horoscopo + fecha;
                             //El valor se forma con las respuestas correctas de ambos servidores
                             valor = new String[]{respuestaHoroscopo, respuestaClima};
-                            Log.logInfo(SERVIDORCENTRAL, "Se almacena en cache la clave: " + clave);
+                            Log.logInfo(servidorCentralStr, "Se almacena en cache la clave: " + clave);
                             cache.put(clave, valor);
 
                             //Se le responde al cliente la solicitud                          
@@ -114,8 +113,8 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                             respuesta.add(respuestaClima);
                             //Se libera las consultas iguales en espera, debido que la cache ya tiene su respuesta
                             this.semaforoCache.release();
-                            Log.logInfo(SERVIDORCENTRAL, "Se responde al cliente con: <" + respuestaHoroscopo + "; " + respuestaClima + ">");
-                            Log.logInfo(SERVIDORCENTRAL, "Se libera las consultas iguales en espera, debido que la cache ya tiene su respuesta");
+                            Log.logInfo(servidorCentralStr, "Se responde al cliente con: <" + respuestaHoroscopo + "; " + respuestaClima + ">");
+                            Log.logInfo(servidorCentralStr, "Se libera las consultas iguales en espera, debido que la cache ya tiene su respuesta");
                         } else {
                             //Se le responde al cliente del error en clima
                             respuesta.add(respuestaClima);
@@ -126,15 +125,15 @@ public class ServerCentralImp extends UnicastRemoteObject implements ServerCentr
                     }
                 }
             } else {
-                Log.logError(SERVIDORCENTRAL, "Se responde al Cliente: " + rtaValidacion);
+                Log.logError(servidorCentralStr, "Se responde al Cliente: " + rtaValidacion);
                 respuesta.add(rtaValidacion);
             }
         } catch (InterruptedException ex) {
-            Log.logError(SERVIDORCENTRAL, "Error al esperar por la respuesta: " + ex.getMessage());
+            Log.logError(servidorCentralStr, "Error al esperar por la respuesta: " + ex.getMessage());
             respuesta.add("SC");
             return respuesta;
         } catch (RemoteException ex) {
-            Log.logError(SERVIDORCENTRAL, "Error con el sistema rmi: " + ex.getMessage());
+            Log.logError(servidorCentralStr, "Error con el sistema rmi: " + ex.getMessage());
             respuesta.add("SC");
             return respuesta;
         }
