@@ -1,4 +1,4 @@
-package D_Ej2servidor;
+package TP2.D_Ej2servidor;
 // interface que contiene los métodos del servicio
 
 import java.rmi.*;

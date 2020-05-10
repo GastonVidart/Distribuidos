@@ -1,3 +1,5 @@
+package TP2.D_Ej2cliente;
+
 // interface que contiene los métodos del servicio
 
 import java.rmi.*;

@@ -1,3 +1,5 @@
+package TP2.D_Ej2cliente;
+
 import java.rmi.*;
 
 public class Cliente {

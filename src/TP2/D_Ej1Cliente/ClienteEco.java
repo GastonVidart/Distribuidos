@@ -1,3 +1,6 @@
+package TP2.D_Ej1Cliente;
+
+import TP2.D_Ej1Servidor.ServicioEco;
 import java.rmi.*;
 import java.rmi.server.*;
 

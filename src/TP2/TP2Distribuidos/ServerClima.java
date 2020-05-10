@@ -1,4 +1,4 @@
-package TP2Distribuidos;
+package TP2.TP2Distribuidos;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

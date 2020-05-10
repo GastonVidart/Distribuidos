@@ -1,3 +1,5 @@
+package TP2.D_Ej2servidor;
+
 import java.rmi.*;
 import java.rmi.server.*;
 
